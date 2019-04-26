@@ -25,6 +25,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
+
 import org.apache.http.NameValuePair;
 import java.util.List;
 
@@ -37,14 +38,30 @@ import MFS100.MFS100Event;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 public class Attandance extends javax.swing.JFrame implements MFS100Event{
 
     private String emp_code;
+    String url = "http://52.44.198.156/index.php/";
+    
     /************ MFS 100 */
     String key = "";
     MFS100 mfs100 = null;
@@ -70,6 +87,14 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
         setExtendedState((int) JFrame.CENTER_ALIGNMENT); 
         m_FingerPrintImage = new MyIcon(lblFinger.getWidth(), lblFinger.getHeight());
         lblFinger.setIcon(null);
+        /**** all indicator set  ***************/
+        setIndicator();
+        /************** timer *************/
+        timer();
+        /*************** end of timer *******/
+        /****** device flag *****/
+        deviceFlag();
+        /******************* device flag *****/
         mfs100 = new MFS100(this, key);
         try {
             System.out.println("JAV_VERSION: " + System.getProperty("java.version"));
@@ -103,6 +128,12 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
         btn_e = new javax.swing.JButton();
         lblImage = new javax.swing.JLabel();
         lblFinger = new javax.swing.JLabel();
+        lblName = new javax.swing.JLabel();
+        lblBranch = new javax.swing.JLabel();
+        lblMessage = new javax.swing.JLabel();
+        lblTimer = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        lblDevice = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -120,6 +151,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("VFS Attandance");
 
+        btn_enter.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_enter.setText("Enter");
         btn_enter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -127,6 +159,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_8.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_8.setText("8");
         btn_8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -134,6 +167,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_7.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_7.setText("7");
         btn_7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -141,6 +175,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_9.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_9.setText("9");
         btn_9.setToolTipText("");
         btn_9.addActionListener(new java.awt.event.ActionListener() {
@@ -149,6 +184,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_4.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_4.setText("4");
         btn_4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -156,6 +192,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_5.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_5.setText("5");
         btn_5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -163,6 +200,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_6.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_6.setText("6");
         btn_6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -170,6 +208,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_1.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_1.setText("1");
         btn_1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -177,6 +216,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_3.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_3.setText("3");
         btn_3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -184,6 +224,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_2.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_2.setText("2");
         btn_2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -191,6 +232,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_clear.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_clear.setText("Clear");
         btn_clear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -198,6 +240,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_0.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_0.setText("0");
         btn_0.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -205,6 +248,7 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
 
+        btn_e.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
         btn_e.setText("E");
         btn_e.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -216,33 +260,54 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
 
         lblFinger.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+        lblName.setText("Amit Singh");
+
+        lblBranch.setText("BAGULA");
+
+        lblMessage.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
+        lblMessage.setText("Attandance Accepted");
+
+        lblTimer.setFont(new java.awt.Font("Ubuntu", 1, 18)); // NOI18N
+        lblTimer.setForeground(java.awt.Color.blue);
+        lblTimer.setText("Timer");
+        lblTimer.setToolTipText("");
+        lblTimer.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(66, 66, 66)
+                .addComponent(lblDevice, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lblDevice, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(21, 21, 21))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btn_4, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_7, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_e, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(31, 31, 31)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btn_8, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btn_9, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(btn_5, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btn_6, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btn_4, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btn_7, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btn_1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btn_e, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(btn_2, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -251,47 +316,56 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(btn_0, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(btn_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(55, 55, 55)
-                                .addComponent(lblImage, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
-                                .addGap(60, 60, 60))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(btn_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btn_8, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btn_9, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btn_5, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btn_6, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(17, 17, 17)
+                                .addGap(23, 23, 23)
                                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(txtEmpcode, javax.swing.GroupLayout.PREFERRED_SIZE, 468, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap())))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(150, 150, 150)
-                .addComponent(btn_enter, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(417, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(560, 560, 560)
-                    .addComponent(lblFinger, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
-                    .addGap(60, 60, 60)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(119, 119, 119)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblMessage)
+                                    .addComponent(btn_enter, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtEmpcode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 468, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblFinger, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                            .addComponent(lblImage, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                            .addComponent(lblName)
+                            .addComponent(lblBranch)
+                            .addComponent(lblTimer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(16, 16, 16))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(txtEmpcode, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_7, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_8, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_9, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_6, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(23, 23, 23)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtEmpcode, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btn_7, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_8, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_9, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btn_6, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btn_2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btn_1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -301,27 +375,40 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
                             .addComponent(btn_e, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btn_0, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btn_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(50, 50, 50)
-                        .addComponent(btn_enter, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(96, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblImage, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(42, 42, 42))))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(90, 90, 90)
-                    .addComponent(lblFinger, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(291, Short.MAX_VALUE)))
+                        .addComponent(btn_enter, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblMessage))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblTimer)
+                        .addGap(18, 18, 18)
+                        .addComponent(lblFinger, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblImage, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblName)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblBranch)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_enterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_enterActionPerformed
         // TODO add your handling code here:
         if(isDeviceConnected()){
-            initilizeDevice();
+            try {
+                initilizeDevice();
+                 apiCall();
+                 startCapture();
+            } catch (JSONException ex) {
+                Logger.getLogger(Attandance.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
        
     }//GEN-LAST:event_btn_enterActionPerformed
@@ -403,15 +490,15 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
         txtEmpcode.setText(emp_code);
     }//GEN-LAST:event_btn_eActionPerformed
     /******** api call*******/
-    private void apiCall(){
+    private void apiCall() throws JSONException{
         // Map<String,String> sysInfo=SystemInfo.mac_ip();
         String mac=SystemInfo.getMACAddress();
         //System.out.println(mac);
         /*************** api call *************/
-         String url = "http://52.44.198.156/index.php/employee/check_code";
+        
 
 	HttpClient client = HttpClientBuilder.create().build();
-	HttpPost post = new HttpPost(url);
+	HttpPost post = new HttpPost(url+"employee/check_code");
 
 	// add header
 	//post.setHeader("User-Agent", USER_AGENT);
@@ -430,11 +517,13 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
 	HttpResponse response = null;
         try {
             response = client.execute(post);
+           // String json_string = EntityUtils.toString(response.getEntity());
+            
+           
         } catch (IOException ex) {
             Logger.getLogger(Attandance.class.getName()).log(Level.SEVERE, null, ex);
         }
-	System.out.println(response.getStatusLine().getStatusCode() 
-                + "Response Code : ");
+	//System.out.println(response.getStatusLine().getStatusCode()+ "Response Code : ");
         
 
 	BufferedReader rd = null;
@@ -446,28 +535,45 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
         } catch (IOException ex) {
             Logger.getLogger(Attandance.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
 
 	StringBuilder result = new StringBuilder();
 	String line = "";
         try {
             while ((line = rd.readLine()) != null) {
-                //result.append(line);
-                System.out.println(line);
+                result.append(line);
+                
             }
         } catch (IOException ex) {
             Logger.getLogger(Attandance.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+         JSONObject jsonResponse = new JSONObject(result.toString());
+         //System.out.println(jsonResponse);
+         String error = jsonResponse.getString("error");
+         if(error=="true"){
+             //JOptionPane.showMessageDialog
+             JSONArray errorTexts = jsonResponse.getJSONArray("errorText");
+             String err = null;
+             for(int i=0; i<errorTexts.length();i++){
+                 err = errorTexts.getString(i)+",";
+             }
+             JOptionPane.showMessageDialog(rootPane,"Erorr: "+err);
+         }else{
+             // compair ISO
+         }
+        
+        
         /*************** end of api call ********/
     }
     /******** MFS 100 ***********/
-     private void initilizeDevice() {                                        
+     private void initilizeDevice() throws JSONException {                                        
         this.serial_no ="";
         int ret = mfs100.Init();
         if (ret == 0) {
             deviceInfo = mfs100.GetDeviceInfo();
             this.serial_no =deviceInfo.SerialNo();
-            apiCall();
-            startCapture();
+           
            // JOptionPane.showMessageDialog(rootPane, "Scanner Initialized");
         } else {
             JOptionPane.showMessageDialog(rootPane, "Error: " + mfs100.GetLastError() + " (" + String.valueOf(ret) + ")");
@@ -483,9 +589,9 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
     } 
     private boolean isDeviceConnected() { 
         boolean is_connected = mfs100.IsConnected();
-        if(!is_connected){
+        /*if(!is_connected){
             JOptionPane.showMessageDialog(rootPane, mfs100.IsConnected());
-        }
+        }*/
          return is_connected;
     } 
     private void matchISOActionPerformed() {                                            
@@ -551,8 +657,8 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             ISOTemplate = new byte[fingerData.ISOTemplate().length];
             System.arraycopy(fingerData.ISOTemplate(), 0, ISOTemplate, 0, fingerData.ISOTemplate().length);
 
-            ANSITemplate = new byte[fingerData.ANSITemplate().length];
-            System.arraycopy(fingerData.ANSITemplate(), 0, ANSITemplate, 0, fingerData.ANSITemplate().length);
+            //ANSITemplate = new byte[fingerData.ANSITemplate().length];
+            //System.arraycopy(fingerData.ANSITemplate(), 0, ANSITemplate, 0, fingerData.ANSITemplate().length);
             //JOptionPane.showMessageDialog(rootPane, "Capture Success.\nFinger data is saved at application path");
         } else {
             JOptionPane.showMessageDialog(rootPane, errorMsg + " (" + String.valueOf(errorCode) + ")");
@@ -592,7 +698,74 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
             }
         });
     }
-
+    
+    /************* timer ***************/
+    private void timer()
+    {
+        Timer timer;
+        ActionListener actionListner;
+        actionListner = new ActionListener(){
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Date date = new Date();
+                DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+                String dateTime = dateFormat.format(date);
+                lblTimer.setText(dateTime);
+                
+            }
+            
+        };
+        timer = new Timer(1000, actionListner);
+        timer.setInitialDelay(0);
+        timer.start();
+    }
+    /****** end of timer ************/
+    /*********************** device is connected **********************/
+    private void deviceFlag()
+    {
+        Timer timer;
+        ActionListener actionListner;
+        
+       
+        actionListner = new ActionListener(){
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               //String isConnected = "No";
+                
+                    //initilizeDevice();
+                    if(isDeviceConnected())
+                    {
+                       // lblDevice.setIcon(new ImageIcon(img2));
+                         lblDevice.setIcon(new javax.swing.ImageIcon(getClass().getResource("images/Aqua-Ball-Green-icon-device.png")));
+                        //lblDevice.setIcon(icon);
+                    }else{
+                         lblDevice.setIcon(new javax.swing.ImageIcon(getClass().getResource("images/Aqua-Ball-Red-icon-device.png")));
+                    }
+               
+                
+                /*Date date = new Date();
+                DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+                String dateTime = dateFormat.format(date);*/
+                //lblDevice.setText(isConnected);
+                
+            }
+            
+        };
+        timer = new Timer(1000, actionListner);
+        timer.setInitialDelay(500);
+        timer.start();
+    }
+    /*********************** end of device is connected ************/
+    /**** set indicator *****/
+    private void setIndicator(){
+    
+        
+        lblDevice.setIcon(new javax.swing.ImageIcon(getClass().getResource("images/Aqua-Ball-Red-icon-device.png")));
+        
+       
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_0;
     private javax.swing.JButton btn_1;
@@ -608,8 +781,14 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
     private javax.swing.JButton btn_e;
     private javax.swing.JButton btn_enter;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lblBranch;
+    private javax.swing.JLabel lblDevice;
     private javax.swing.JLabel lblFinger;
     private javax.swing.JLabel lblImage;
+    private javax.swing.JLabel lblMessage;
+    private javax.swing.JLabel lblName;
+    private javax.swing.JLabel lblTimer;
     private javax.swing.JTextField txtEmpcode;
     // End of variables declaration//GEN-END:variables
 
@@ -665,3 +844,5 @@ public class Attandance extends javax.swing.JFrame implements MFS100Event{
         private Image m_Image;
     }
 }
+
+
